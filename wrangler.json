@@ -2,4 +2,11 @@
   "name": "formations",
   "main": "src/index.js",
   "compatibility_date": "2024-01-01"
+
+  "kv_namespaces": [
+    {
+      "binding": "FORMATIONS",
+      "id": "c39a464783d34cc6bc1c2487ccd1e544"
+    }
+  ]
 }
