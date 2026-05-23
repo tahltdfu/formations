@@ -1,15 +1,71 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
-    const name = url.pathname.split("/").filter(Boolean).pop() || "defense0523";
-
-    const formations = {
-      "defense0523": "eyJHYW1lTW9kZSI6MCwidHJvb3BMYXlvdXQiOnsiMzIiOjE0NCwiMjEiOjIxNywiMjMiOjE4MCwiMjAiOjIxOSwiMzMiOjE3MywiNjQiOjIxMSwiNTQiOjIyMCwiMjUiOjIxNywiNTAiOjIyMCwiMiI6MTkzLCI0MCI6MTYwLCIzMCI6MTY4LCIxMSI6MjE5LCI0MiI6MTgzLCI2IjoyMTEsIjIyIjoyMTksIjYxIjoxNjYsIjMxIjoxNDQsIjQ0IjoxODMsIjY2IjoxMjUsIjAiOjIxMSwiMyI6MTYyLCI1NSI6MjE2LCI2MyI6MTY2LCIxNiI6MjE5LCIxMiI6MTgwLCIxNSI6MjE5LCI1MyI6MjE2LCI1NiI6MjIwLCI0NiI6MTYwLCIxIjoyMTEsIjM2IjoxNjgsIjM1IjoxNDQsIjI2IjoyMTksIjEzIjoxODYsIjUxIjoyMTYsIjUyIjoyMjAsIjE0IjoxODAsIjI0IjoyMTksIjM0IjoxNDQsIjQxIjoyMDgsIjYyIjoyMTEsIjQ1IjoyMDgsIjQiOjE5MywiNjAiOjEyNSwiNDMiOjE4MywiNSI6MjExLCI2NSI6MTY2LCIxMCI6MjE5fSwiaGVyb0xheW91dCI6eyIyIjoxNDJ9LCJhcm15TGF5b3V0IjpudWxsfQ==",
-      "Da-Seo": "eyJHYW1lTW9kZSI6MCwidHJvb3BMYXlvdXQiOnsiMTMiOjIxMywiNjQiOjIyMCwiMTUiOjIxOSwiMzMiOjE5MywiNTYiOjIyMCwiMjAiOjIxOSwiNjAiOjIyMCwiNDUiOjIxNiwiNSI6MTI1LCIxNCI6MTc5LCI1MyI6MjA4LCIyNSI6MjE5LCI1MCI6MjIwLCIxIjoxMjUsIjM2IjoyMTksIjIxIjoyMTksIjAiOjE5MywiMjYiOjIxOSwiMzAiOjIxOSwiNTEiOjIxNiwiMTYiOjIxOSwiNiI6MTkzLCI2MyI6MjE2LCI0MSI6MjE2LCIzMSI6MTkzLCIxMCI6MjE5LCIzMiI6MjE5LCI1NCI6MjE2LCI0NiI6MjE2LCI2NiI6MjIwLCI0MyI6MjIwLCIyNCI6MTY4LCIxMSI6MjE5LCIyMyI6MTg2LCIyIjoyMTEsIjQwIjoyMTYsIjEyIjoxNzksIjMiOjE2MiwiNTUiOjIxNiwiMjIiOjE2OCwiNCI6MjExLCI2NSI6MjEzLCI0MiI6MjE2LCI2MSI6MjEzLCI1MiI6MjE2LCI0NCI6MjE2LCI2MiI6MjIwLCIzNSI6MTkzLCIzNCI6MjE5fSwiaGVyb0xheW91dCI6eyIxIjoxMzl9LCJhcm15TGF5b3V0IjpudWxsfQ=="
-    };
-
-    const formation = formations[name] || "";
-
+    // LIST ALL FORMATIONS
+    if (url.pathname === "/list") {
+      const list = await env.FORMATIONS.list();
+      const links = list.keys.map(item => {
+        return `<li>
+          <a href="/${item.name}">
+            ${item.name}
+          </a>
+        </li>`;
+      }).join("");
+      return new Response(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Stored Formations</title>
+        </head>
+        <body style="
+          font-family: Arial;
+          background:#111827;
+          color:white;
+          padding:40px;
+        ">
+          <h1>Stored Formations</h1>
+          <ul>
+            ${links}
+          </ul>
+        </body>
+        </html>
+      `, {
+        headers: {
+          "content-type": "text/html"
+        }
+      });
+    }
+    // GET FORMATION NAME FROM URL
+    const name =
+      url.pathname.split("/")
+        .filter(Boolean)
+        .pop() || "home";
+    // LOAD FORMATION FROM KV
+    const formation =
+      await env.FORMATIONS.get(name);
+    // NOT FOUND
+    if (!formation) {
+      return new Response(`
+        <!DOCTYPE html>
+        <html>
+        <body style="
+          font-family: Arial;
+          background:#111827;
+          color:white;
+          text-align:center;
+          padding:80px;
+        ">
+          <h1>Formation Not Found</h1>
+        </body>
+        </html>
+      `, {
+        status: 404,
+        headers: {
+          "content-type": "text/html"
+        }
+      });
+    }
+    // FORMATION PAGE
     const html = `
 <!DOCTYPE html>
 <html>
@@ -17,26 +73,45 @@ export default {
   <meta charset="UTF-8">
   <title>${name}</title>
 </head>
-<body style="font-family: Arial; background:#111827; color:white; text-align:center; padding:80px;">
+<body style="
+  font-family: Arial;
+  background:#111827;
+  color:white;
+  text-align:center;
+  padding:80px;
+">
   <h1>${name}</h1>
-  <button onclick="copyFormation()" style="padding:20px; font-size:20px;">
+  <button
+    onclick="copyFormation()"
+    style="
+      padding:20px;
+      font-size:20px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+    "
+  >
     Copy Formation
   </button>
   <p id="status"></p>
-
   <script>
-    const formation = ${JSON.stringify(formation)};
-
+    const formation =
+      ${JSON.stringify(formation)};
     async function copyFormation() {
-      await navigator.clipboard.writeText(formation);
-      document.getElementById("status").innerText = "Copied!";
+      await navigator.clipboard.writeText(
+        formation
+      );
+      document.getElementById("status")
+        .innerText = "Copied!";
     }
   </script>
 </body>
-</html>`;
-
+</html>
+`;
     return new Response(html, {
-      headers: { "content-type": "text/html" }
+      headers: {
+        "content-type": "text/html"
+      }
     });
   }
 };
