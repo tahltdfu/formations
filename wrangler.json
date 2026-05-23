@@ -1,0 +1,5 @@
+{
+  "name": "formations",
+  "main": "src/index.js",
+  "compatability_date": "2024-01-01"
+}
