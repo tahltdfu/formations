@@ -1,15 +1,30 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    // LIST ALL FORMATIONS
+    // LIST PAGE
     if (url.pathname === "/list") {
+      if (!env.FORMATIONS) {
+        return new Response(
+          "KV binding FORMATIONS is missing",
+          { status: 500 }
+        );
+      }
+      const list = await env.FORMATIONS.list();
+      const links = list.keys.map(item => {
+        return `
+          <li>
+            <a href="/${item.name}">
+              ${item.name}
+            </a>
+          </li>
+        `;
+      }).join("");
       return new Response(`
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Stored Formations X</title>
+          <title>Stored Formations</title>
         </head>
-      
         <body style="
           font-family: Arial;
           background:white;
@@ -22,20 +37,19 @@ export default {
           ">
             Stored Formations
           </h1>
-      
           <ul style="
             list-style:none;
             padding:0;
           ">
             ${links}
           </ul>
-      
           <style>
             a {
               display:block;
               font-size:48px;
               margin-bottom:30px;
               text-decoration:none;
+              color:#2563eb;
             }
           </style>
         </body>
@@ -46,14 +60,37 @@ export default {
         }
       });
     }
-    // GET FORMATION NAME FROM URL
-    const name =
-      url.pathname.split("/")
-        .filter(Boolean)
-        .pop() || "home";
-    // LOAD FORMATION FROM KV
-    const formation =
-      await env.FORMATIONS.get(name);
+    // GET FORMATION NAME
+    const name = url.pathname
+      .split("/")
+      .filter(Boolean)
+      .pop();
+    // HOMEPAGE
+    if (!name) {
+      return new Response(`
+        <!DOCTYPE html>
+        <html>
+        <body style="
+          font-family: Arial;
+          background:#111827;
+          color:white;
+          text-align:center;
+          padding:80px;
+        ">
+          <h1>Formation Copier</h1>
+          <p>
+            Visit /list to browse formations
+          </p>
+        </body>
+        </html>
+      `, {
+        headers: {
+          "content-type": "text/html"
+        }
+      });
+    }
+    // LOAD FROM KV
+    const formation = await env.FORMATIONS.get(name);
     // NOT FOUND
     if (!formation) {
       return new Response(`
