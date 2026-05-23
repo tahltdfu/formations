@@ -3,35 +3,41 @@ export default {
     const url = new URL(request.url);
     // LIST ALL FORMATIONS
     if (url.pathname === "/list") {
-      if (!env.FORMATIONS) {
-        return new Response("KV binding FORMATION is missing", {
-          status: 500
-        });
-      }
-      const list = await env.FORMATIONS.list();
-      const links = list.keys.map(item => {
-        return `<li>
-          <a href="/${item.name}">
-            ${item.name}
-          </a>
-        </li>`;
-      }).join("");
       return new Response(`
         <!DOCTYPE html>
         <html>
         <head>
           <title>Stored Formations</title>
         </head>
+      
         <body style="
           font-family: Arial;
-          background:#111827;
-          color:white;
+          background:white;
+          color:black;
           padding:40px;
         ">
-          <h1>Stored Formations</h1>
-          <ul>
+          <h1 style="
+            font-size:48px;
+            margin-bottom:40px;
+          ">
+            Stored Formations
+          </h1>
+      
+          <ul style="
+            list-style:none;
+            padding:0;
+          ">
             ${links}
           </ul>
+      
+          <style>
+            a {
+              display:block;
+              font-size:48px;
+              margin-bottom:30px;
+              text-decoration:none;
+            }
+          </style>
         </body>
         </html>
       `, {
