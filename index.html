@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Formation Copier</title>
 
+  <style>
+    body {
+      font-family: Arial;
+      background: #111827;
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    code {
+      display: block;
+      margin-top: 20px;
+      word-break: break-all;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1 id="title">Formation</h1>
+
+<button onclick="copyFormation()">
+  Copy Formation
+</button>
+
+<p id="status"></p>
+
+<script>
+const formations = {
+  "defense0523": "eyJHYW1lTW9kZSI6MCwidHJvb3BMYXlvdXQiOnsiNTQiOjIyMCwiMzIiOjE0NCwiMzYiOjE2OCwiMjYiOjIxOSwiMTYiOjIxOSwiMTAiOjIxOSwiNDAiOjE2MCwiNiI6MjExLCIzNCI6MTQ0LCIyIjoxOTMsIjY2IjoxMjUsIjYzIjoxNjYsIjY0IjoyMTEsIjQyIjoxODMsIjE0IjoxODAsIjM1IjoxNDQsIjEyIjoxODAsIjE1IjoyMTksIjEzIjoxODYsIjIzIjoxODAsIjQ1IjoyMDgsIjMzIjoxNzMsIjMiOjE2MiwiNjIiOjIxMSwiNDEiOjIwOCwiNDYiOjE2MCwiMjIiOjIxOSwiNTAiOjIyMCwiNjEiOjE2NiwiNCI6MTkzLCI0MyI6MTgzLCIwIjoyMTEsIjQ0IjoxODMsIjU1IjoyMTYsIjMxIjoxNDQsIjIxIjoyMTcsIjI1IjoyMTcsIjUxIjoyMTYsIjI0IjoyMTksIjUiOjIxMSwiNTIiOjIyMCwiMzAiOjE2OCwiNTMiOjIxNiwiNjAiOjEyNSwiNTYiOjIyMCwiNjUiOjE2NiwiMjAiOjIxOSwiMTEiOjIxOSwiMSI6MjExfSwiaGVyb0xheW91dCI6eyIyIjoxNDJ9LCJhcm15TGF5b3V0IjpudWxsfQ==",
+  "Da-Seo": "eyJHYW1lTW9kZSI6MCwidHJvb3BMYXlvdXQiOnsiMiI6MjExLCIyMiI6MTY4LCI2MSI6MjEzLCIyNCI6MTY4LCIxMiI6MTc5LCIzNSI6MTkzLCI2NSI6MjEzLCI0IjoyMTEsIjEzIjoyMTMsIjE1IjoyMTksIjQyIjoyMTYsIjU0IjoyMTYsIjUyIjoyMTYsIjIxIjoyMTksIjI1IjoyMTksIjY0IjoyMjAsIjYiOjE5MywiNTUiOjIxNiwiMSI6MTI1LCI1MyI6MjA4LCIzMyI6MTkzLCIyMyI6MTg2LCIzNCI6MjE5LCI0NCI6MjE2LCIzMCI6MjE5LCIyNiI6MjE5LCIxNCI6MTc5LCIzIjoxNjIsIjQ2IjoyMTYsIjYyIjoyMjAsIjQxIjoyMTYsIjE2IjoyMTksIjYzIjoyMTYsIjMxIjoxOTMsIjEwIjoyMTksIjUiOjEyNSwiNjAiOjIyMCwiNDMiOjIyMCwiNDUiOjIxNiwiMzYiOjIxOSwiNTEiOjIxNiwiMjAiOjIxOSwiNTAiOjIyMCwiMzIiOjIxOSwiNDAiOjIxNiwiNjYiOjIyMCwiNTYiOjIyMCwiMCI6MTkzLCIxMSI6MjE5fSwiaGVyb0xheW91dCI6eyIxIjoxMzl9LCJhcm15TGF5b3V0IjpudWxsfQ=="
+};
+
+const path = window.location.pathname.replace("/", "");
+const formation = formations[path];
+
+document.getElementById("title").innerText = path || "Formation";
+
+async function copyFormation() {
+  if (!formation) {
+    document.getElementById("status").innerText =
+      "Formation not found";
+    return;
+  }
+
+  await navigator.clipboard.writeText(formation);
+
+  document.getElementById("status").innerText =
+    "Copied!";
+}
+</script>
+
+</body>
+</html>
