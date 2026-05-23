@@ -7,7 +7,7 @@ export default {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Stored Formations</title>
+          <title>Stored Formations X</title>
         </head>
       
         <body style="
