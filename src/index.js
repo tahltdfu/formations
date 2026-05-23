@@ -3,6 +3,11 @@ export default {
     const url = new URL(request.url);
     // LIST ALL FORMATIONS
     if (url.pathname === "/list") {
+      if (!env.FORMATIONS) {
+        return new Response("KV binding FORMATION is missing", {
+          status: 500
+        });
+      }
       const list = await env.FORMATIONS.list();
       const links = list.keys.map(item => {
         return `<li>
